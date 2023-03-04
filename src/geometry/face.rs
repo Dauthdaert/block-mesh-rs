@@ -102,13 +102,18 @@ impl OrientedBlockFace {
 
     /// Returns the 6 vertex indices for the quad in order to make two triangles
     /// in a mesh. Winding order depends on both the sign of the surface normal
-    /// and the permutation of the UVs.
+    /// the permutation of the UVs and the Ambient Occlusion.
     ///
     /// Front faces will be wound counterclockwise, and back faces clockwise, as
     /// per convention.
     #[inline]
-    pub fn quad_mesh_indices(&self, start: u32) -> [u32; 6] {
-        quad_indices(start, self.n_sign * self.permutation.sign() > 0)
+    pub fn quad_mesh_indices(&self, quad: &UnorientedQuad, start: u32) -> [u32; 6] {
+        let ao = self.quad_mesh_ao(quad);
+        if ao[1] + ao[3] > ao[2] + ao[0] {
+            quad_indices(start, self.n_sign * self.permutation.sign() > 0, true)
+        } else {
+            quad_indices(start, self.n_sign * self.permutation.sign() > 0, false)
+        }
     }
 
     /// Returns the UV coordinates of the 4 corners of the quad. Returns
@@ -178,10 +183,16 @@ impl OrientedBlockFace {
 /// Returns the vertex indices for a single quad (two triangles). The triangles
 /// may have either clockwise or counter-clockwise winding. `start` is the first
 /// index.
-fn quad_indices(start: u32, counter_clockwise: bool) -> [u32; 6] {
-    if counter_clockwise {
-        [start, start + 1, start + 2, start + 1, start + 3, start + 2]
+fn quad_indices(start: u32, counter_clockwise: bool, flipped: bool) -> [u32; 6] {
+    if flipped {
+        if counter_clockwise {
+            [start, start + 1, start + 2, start + 1, start + 3, start + 2]
+        } else {
+            [start, start + 2, start + 1, start + 1, start + 2, start + 3]
+        }
+    } else if counter_clockwise {
+        [start, start + 3, start + 2, start, start + 1, start + 3]
     } else {
-        [start, start + 2, start + 1, start + 1, start + 2, start + 3]
+        [start, start + 3, start + 1, start, start + 2, start + 3]
     }
 }
