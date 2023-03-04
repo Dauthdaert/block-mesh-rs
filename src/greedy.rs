@@ -1,8 +1,12 @@
 mod merge_strategy;
 
+use std::collections::HashMap;
+
 pub use merge_strategy::*;
 
-use crate::{bounds::assert_in_bounds, OrientedBlockFace, QuadBuffer, UnorientedQuad, Voxel, VoxelVisibility};
+use crate::{
+    bounds::assert_in_bounds, OrientedBlockFace, QuadBuffer, UnorientedQuad, Voxel, VoxelVisibility,
+};
 
 use ilattice::glam::UVec3;
 use ilattice::prelude::Extent;
@@ -162,7 +166,10 @@ fn greedy_quads_for_face<T, S, Merger>(
         } else {
             0u32.wrapping_sub(n_stride)
         },
+        face_index: face.permutation.axes()[0] as u8,
     };
+
+    let mut aos: HashMap<(u32, u8), [u8; 4]> = HashMap::new();
 
     for _ in 0..num_slices {
         let slice_ub = slice_extent.least_upper_bound().to_array();
@@ -198,6 +205,8 @@ fn greedy_quads_for_face<T, S, Merger>(
                     &face_strides,
                     voxels,
                     visited,
+                    voxels_shape,
+                    &mut aos,
                 )
             };
             debug_assert!(quad_width >= 1);
@@ -216,6 +225,10 @@ fn greedy_quads_for_face<T, S, Merger>(
                 minimum: quad_min.to_array(),
                 width: quad_width,
                 height: quad_height,
+                ao: aos
+                    .get(&(quad_min_index, face_strides.face_index))
+                    .unwrap()
+                    .clone(),
             });
         }
 

@@ -39,12 +39,12 @@ impl OrientedBlockFace {
             AxisPermutation::even_with_normal_axis(normal.unsigned_axis()),
         )
     }
-    
+
     #[inline]
     pub fn n_sign(&self) -> i32 {
         self.n_sign
     }
-    
+
     #[inline]
     pub fn permutation(&self) -> AxisPermutation {
         self.permutation
@@ -166,6 +166,12 @@ impl OrientedBlockFace {
                 [0.0, 0.0],
             ],
         }
+    }
+
+    // Ambient Occlusion
+    #[inline]
+    pub fn quad_mesh_ao(&self, quad: &UnorientedQuad) -> [u8; 4] {
+        quad.ao
     }
 }
 

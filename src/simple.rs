@@ -1,11 +1,11 @@
 use crate::{
-    bounds::assert_in_bounds, IdentityVoxel, OrientedBlockFace, UnitQuadBuffer, UnorientedUnitQuad, Voxel, VoxelVisibility,
+    bounds::assert_in_bounds, IdentityVoxel, OrientedBlockFace, UnitQuadBuffer, UnorientedUnitQuad,
+    Voxel, VoxelVisibility,
 };
 
 use ilattice::glam::UVec3;
 use ilattice::prelude::Extent;
 use ndshape::Shape;
-
 
 /// A fast and simple meshing algorithm that produces a single quad for every visible face of a block.
 ///
@@ -80,7 +80,10 @@ pub fn visible_block_faces_with_voxel_view<'a, T, V, S>(
             };
 
             if face_needs_mesh {
-                output.groups[face_index].push(UnorientedUnitQuad { minimum: p_array });
+                output.groups[face_index].push(UnorientedUnitQuad {
+                    minimum: p_array,
+                    ao: [0; 4],
+                });
             }
         }
     }
@@ -139,5 +142,4 @@ mod tests {
             }
         }
     }
-
 }

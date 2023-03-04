@@ -76,7 +76,7 @@
 //! // Some quads were generated.
 //! assert!(buffer.quads.num_quads() > 0);
 //! ```
-
+#![allow(clippy::too_many_arguments)]
 mod bounds;
 mod buffer;
 pub mod geometry;
