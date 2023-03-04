@@ -109,7 +109,7 @@ impl OrientedBlockFace {
     #[inline]
     pub fn quad_mesh_indices(&self, quad: &UnorientedQuad, start: u32) -> [u32; 6] {
         let ao = self.quad_mesh_ao(quad);
-        if ao[1] + ao[3] > ao[2] + ao[0] {
+        if ao[1] + ao[2] > ao[3] + ao[0] {
             quad_indices(start, self.n_sign * self.permutation.sign() > 0, true)
         } else {
             quad_indices(start, self.n_sign * self.permutation.sign() > 0, false)
